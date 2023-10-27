@@ -6,3 +6,7 @@
 .fa-info:before {
     content: "\f05a";
 }
+
+body{
+    font-weight:500;
+}
