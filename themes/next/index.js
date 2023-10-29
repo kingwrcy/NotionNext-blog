@@ -26,14 +26,16 @@ import { Transition } from '@headlessui/react'
 import { Style } from './style'
 import replaceSearchResult from '@/components/Mark'
 import CommonHead from '@/components/CommonHead'
+import { Analytics } from '@vercel/analytics/react'
 
 /**
  * 基础布局 采用左中右三栏布局，移动端使用顶部导航栏
  * @returns {JSX.Element}
  * @constructor
  */
-const LayoutBase = (props) => {
-  const { children, headerSlot, floatSlot, rightAreaSlot, siteInfo, meta } = props
+const LayoutBase = props => {
+  const { children, headerSlot, floatSlot, rightAreaSlot, siteInfo, meta } =
+    props
   const { onLoading } = useGlobal()
   const targetRef = useRef(null)
   const floatButtonGroup = useRef(null)
@@ -45,7 +47,7 @@ const LayoutBase = (props) => {
     const clientHeight = targetRef?.clientHeight
     const scrollY = window.pageYOffset
     const fullHeight = clientHeight - window.outerHeight
-    let per = parseFloat(((scrollY / fullHeight * 100)).toFixed(0))
+    let per = parseFloat(((scrollY / fullHeight) * 100).toFixed(0))
     if (per > 100) per = 100
     const shouldShow = scrollY > 100 && per > 0
 
@@ -69,58 +71,85 @@ const LayoutBase = (props) => {
   }, [showRightFloat])
 
   return (
-        <div id='theme-next'>
-            {/* SEO相关 */}
-            <CommonHead meta={meta}/>
-            <Style/>
+    <div id="theme-next">
+      <Analytics />
+      {/* SEO相关 */}
+      <CommonHead meta={meta} />
+      <Style />
 
-            {/* 移动端顶部导航栏 */}
-            <TopNav {...props} />
+      {/* 移动端顶部导航栏 */}
+      <TopNav {...props} />
 
-            <>{headerSlot}</>
+      <>{headerSlot}</>
 
-            {/* 顶部黑线装饰 */}
-            <div className='h-0.5 w-full bg-gray-700 dark:bg-gray-600 hidden lg:block' />
+      {/* 顶部黑线装饰 */}
+      <div className="h-0.5 w-full bg-gray-700 dark:bg-gray-600 hidden lg:block" />
 
-            {/* 主区 */}
-            <main id='wrapper' className={(BLOG.LAYOUT_SIDEBAR_REVERSE ? 'flex-row-reverse' : '') + ' next relative flex justify-center flex-1 pb-12'}>
-                {/* 左侧栏样式 */}
-                <SideAreaLeft targetRef={targetRef} {...props} />
+      {/* 主区 */}
+      <main
+        id="wrapper"
+        className={
+          (BLOG.LAYOUT_SIDEBAR_REVERSE ? 'flex-row-reverse' : '') +
+          ' next relative flex justify-center flex-1 pb-12'
+        }
+      >
+        {/* 左侧栏样式 */}
+        <SideAreaLeft targetRef={targetRef} {...props} />
 
-                {/* 中央内容 */}
-                <section id='container-inner' className={`${CONFIG.NAV_TYPE !== 'normal' ? 'mt-24' : ''} lg:max-w-3xl xl:max-w-4xl flex-grow md:mt-0 min-h-screen w-full relative z-10`} ref={targetRef}>
-                    <Transition
-                        show={!onLoading}
-                        appear={true}
-                        enter="transition ease-in-out duration-700 transform order-first"
-                        enterFrom="opacity-0 translate-y-16"
-                        enterTo="opacity-100"
-                        leave="transition ease-in-out duration-300 transform"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0 -translate-y-16"
-                        unmount={false}
-                    >
-                        {children}
-                    </Transition>
-                </section>
+        {/* 中央内容 */}
+        <section
+          id="container-inner"
+          className={`${
+            CONFIG.NAV_TYPE !== 'normal' ? 'mt-24' : ''
+          } lg:max-w-3xl xl:max-w-4xl flex-grow md:mt-0 min-h-screen w-full relative z-10`}
+          ref={targetRef}
+        >
+          <Transition
+            show={!onLoading}
+            appear={true}
+            enter="transition ease-in-out duration-700 transform order-first"
+            enterFrom="opacity-0 translate-y-16"
+            enterTo="opacity-100"
+            leave="transition ease-in-out duration-300 transform"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0 -translate-y-16"
+            unmount={false}
+          >
+            {children}
+          </Transition>
+        </section>
 
-                {/* 右侧栏样式 */}
-                {CONFIG.RIGHT_BAR && <SideAreaRight targetRef={targetRef} slot={rightAreaSlot} {...props} />}
-            </main>
+        {/* 右侧栏样式 */}
+        {CONFIG.RIGHT_BAR && (
+          <SideAreaRight
+            targetRef={targetRef}
+            slot={rightAreaSlot}
+            {...props}
+          />
+        )}
+      </main>
 
-            {/* 右下角悬浮 */}
-            <div ref={floatButtonGroup} className='right-8 bottom-12 lg:right-2 fixed justify-end z-20 font-sans'>
-                <div className={(showRightFloat ? 'animate__animated ' : 'hidden') + ' animate__fadeInUp rounded-md glassmorphism justify-center duration-500  animate__faster flex space-x-2 items-center cursor-pointer '}>
-                    <JumpToTopButton percent={percent} />
-                    <JumpToBottomButton />
-                    <FloatDarkModeButton />
-                    {floatSlot}
-                </div>
-            </div>
-
-            {/* 页脚 */}
-            <Footer title={siteInfo?.title} />
+      {/* 右下角悬浮 */}
+      <div
+        ref={floatButtonGroup}
+        className="right-8 bottom-12 lg:right-2 fixed justify-end z-20 font-sans"
+      >
+        <div
+          className={
+            (showRightFloat ? 'animate__animated ' : 'hidden') +
+            ' animate__fadeInUp rounded-md glassmorphism justify-center duration-500  animate__faster flex space-x-2 items-center cursor-pointer '
+          }
+        >
+          <JumpToTopButton percent={percent} />
+          <JumpToBottomButton />
+          <FloatDarkModeButton />
+          {floatSlot}
         </div>
+      </div>
+
+      {/* 页脚 */}
+      <Footer title={siteInfo?.title} />
+    </div>
   )
 }
 
@@ -130,7 +159,7 @@ const LayoutBase = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutIndex = (props) => {
+const LayoutIndex = props => {
   return <LayoutPostList {...props} />
 }
 
@@ -139,16 +168,18 @@ const LayoutIndex = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutPostList = (props) => {
-  return <LayoutBase {...props} >
+const LayoutPostList = props => {
+  return (
+    <LayoutBase {...props}>
+      <BlogListBar {...props} />
 
-        <BlogListBar {...props} />
-
-        {BLOG.POST_LIST_STYLE !== 'page'
-          ? <BlogPostListScroll {...props} showSummary={true} />
-          : <BlogPostListPage {...props} />
-        }
+      {BLOG.POST_LIST_STYLE !== 'page' ? (
+        <BlogPostListScroll {...props} showSummary={true} />
+      ) : (
+        <BlogPostListPage {...props} />
+      )}
     </LayoutBase>
+  )
 }
 
 /**
@@ -156,7 +187,7 @@ const LayoutPostList = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutSearch = (props) => {
+const LayoutSearch = props => {
   const { locale } = useGlobal()
   const { posts, keyword } = props
 
@@ -174,20 +205,21 @@ const LayoutSearch = (props) => {
   }, [])
 
   return (
-        <LayoutBase {...props} >
-            <StickyBar>
-                <div className="p-4 dark:text-gray-200">
-                    <i className="mr-1 fas fa-search" />{' '}
-                    {posts?.length} {locale.COMMON.RESULT_OF_SEARCH}
-                </div>
-            </StickyBar>
-            <div className="md:mt-5">
-                {BLOG.POST_LIST_STYLE !== 'page'
-                  ? <BlogPostListScroll {...props} showSummary={true} />
-                  : <BlogPostListPage {...props} />
-                }
-            </div>
-        </LayoutBase>
+    <LayoutBase {...props}>
+      <StickyBar>
+        <div className="p-4 dark:text-gray-200">
+          <i className="mr-1 fas fa-search" /> {posts?.length}{' '}
+          {locale.COMMON.RESULT_OF_SEARCH}
+        </div>
+      </StickyBar>
+      <div className="md:mt-5">
+        {BLOG.POST_LIST_STYLE !== 'page' ? (
+          <BlogPostListScroll {...props} showSummary={true} />
+        ) : (
+          <BlogPostListPage {...props} />
+        )}
+      </div>
+    </LayoutBase>
   )
 }
 
@@ -210,16 +242,21 @@ const Layout404 = props => {
     }, 3000)
   }, [])
 
-  return <LayoutBase {...props}>
-        <div className='md:-mt-20 text-black w-full h-screen text-center justify-center content-center items-center flex flex-col'>
-            <div className='dark:text-gray-200'>
-                <h2 className='inline-block border-r-2 border-gray-600 mr-2 px-3 py-2 align-top'><i className='mr-2 fas fa-spinner animate-spin' />404</h2>
-                <div className='inline-block text-left h-32 leading-10 items-center'>
-                    <h2 className='m-0 p-0'>页面无法加载，即将返回首页</h2>
-                </div>
-            </div>
+  return (
+    <LayoutBase {...props}>
+      <div className="md:-mt-20 text-black w-full h-screen text-center justify-center content-center items-center flex flex-col">
+        <div className="dark:text-gray-200">
+          <h2 className="inline-block border-r-2 border-gray-600 mr-2 px-3 py-2 align-top">
+            <i className="mr-2 fas fa-spinner animate-spin" />
+            404
+          </h2>
+          <div className="inline-block text-left h-32 leading-10 items-center">
+            <h2 className="m-0 p-0">页面无法加载，即将返回首页</h2>
+          </div>
         </div>
+      </div>
     </LayoutBase>
+  )
 }
 
 /**
@@ -227,21 +264,21 @@ const Layout404 = props => {
  * @param {*} props
  * @returns
  */
-const LayoutArchive = (props) => {
+const LayoutArchive = props => {
   const { archivePosts } = props
 
   return (
-        <LayoutBase {...props}>
-            <div className="mb-10 pb-20 bg-white md:p-12 p-3 dark:bg-hexo-black-gray shadow-md min-h-full">
-                {Object.keys(archivePosts).map(archiveTitle => (
-                    <BlogPostArchive
-                        key={archiveTitle}
-                        posts={archivePosts[archiveTitle]}
-                        archiveTitle={archiveTitle}
-                    />
-                ))}
-            </div>
-        </LayoutBase>
+    <LayoutBase {...props}>
+      <div className="mb-10 pb-20 bg-white md:p-12 p-3 dark:bg-hexo-black-gray shadow-md min-h-full">
+        {Object.keys(archivePosts).map(archiveTitle => (
+          <BlogPostArchive
+            key={archiveTitle}
+            posts={archivePosts[archiveTitle]}
+            archiveTitle={archiveTitle}
+          />
+        ))}
+      </div>
+    </LayoutBase>
   )
 }
 
@@ -250,29 +287,35 @@ const LayoutArchive = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutSlug = (props) => {
+const LayoutSlug = props => {
   const { post, lock, validPassword } = props
   const drawerRight = useRef(null)
-  const targetRef = isBrowser ? document.getElementById('article-wrapper') : null
-  const floatSlot = <div className='block lg:hidden'>
-        <TocDrawerButton onClick={() => {
+  const targetRef = isBrowser
+    ? document.getElementById('article-wrapper')
+    : null
+  const floatSlot = (
+    <div className="block lg:hidden">
+      <TocDrawerButton
+        onClick={() => {
           drawerRight?.current?.handleSwitchVisible()
-        }} />
+        }}
+      />
     </div>
+  )
 
   return (
-        <LayoutBase {...props} floatSlot={floatSlot}>
+    <LayoutBase {...props} floatSlot={floatSlot}>
+      {post && !lock && <ArticleDetail {...props} />}
 
-            {post && !lock && <ArticleDetail {...props} />}
+      {post && lock && <ArticleLock validPassword={validPassword} />}
 
-            {post && lock && <ArticleLock validPassword={validPassword} />}
-
-            {/* 悬浮目录按钮 */}
-            {post && <div className='block lg:hidden'>
-                <TocDrawer post={post} cRef={drawerRight} targetRef={targetRef} />
-            </div>}
-
-        </LayoutBase>
+      {/* 悬浮目录按钮 */}
+      {post && (
+        <div className="block lg:hidden">
+          <TocDrawer post={post} cRef={drawerRight} targetRef={targetRef} />
+        </div>
+      )}
+    </LayoutBase>
   )
 }
 
@@ -281,33 +324,39 @@ const LayoutSlug = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutCategoryIndex = (props) => {
+const LayoutCategoryIndex = props => {
   const { allPosts, categoryOptions } = props
   const { locale } = useGlobal()
   return (
-        <LayoutBase totalPosts={allPosts} {...props}>
-            <div className='bg-white dark:bg-hexo-black-gray px-10 py-10 shadow h-full'>
-                <div className='dark:text-gray-200 mb-5'>
-                    <i className='mr-4 fas faTh' />{locale.COMMON.CATEGORY}:
+    <LayoutBase totalPosts={allPosts} {...props}>
+      <div className="bg-white dark:bg-hexo-black-gray px-10 py-10 shadow h-full">
+        <div className="dark:text-gray-200 mb-5">
+          <i className="mr-4 fas faTh" />
+          {locale.COMMON.CATEGORY}:
+        </div>
+        <div id="category-list" className="duration-200 flex flex-wrap">
+          {categoryOptions.map(category => {
+            return (
+              <Link
+                key={category.name}
+                href={`/category/${category.name}`}
+                passHref
+                legacyBehavior
+              >
+                <div
+                  className={
+                    'hover:text-black dark:hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 px-5 cursor-pointer py-2 hover:bg-gray-100'
+                  }
+                >
+                  <i className="mr-4 fas fa-folder" />
+                  {category.name}({category.count})
                 </div>
-                <div id='category-list' className='duration-200 flex flex-wrap'>
-                    {categoryOptions.map(category => {
-                      return (
-                            <Link
-                                key={category.name}
-                                href={`/category/${category.name}`}
-                                passHref
-                                legacyBehavior>
-                                <div
-                                    className={'hover:text-black dark:hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 px-5 cursor-pointer py-2 hover:bg-gray-100'}>
-                                    <i className='mr-4 fas fa-folder' />{category.name}({category.count})
-                                </div>
-                            </Link>
-                      )
-                    })}
-                </div>
-            </div>
-        </LayoutBase>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </LayoutBase>
   )
 }
 
@@ -316,19 +365,28 @@ const LayoutCategoryIndex = (props) => {
  * @param {*} props
  * @returns
  */
-const LayoutTagIndex = (props) => {
+const LayoutTagIndex = props => {
   const { tagOptions } = props
   const { locale } = useGlobal()
-  return <LayoutBase {...props}>
-        <div className='bg-white dark:bg-hexo-black-gray px-10 py-10 shadow h-full'>
-            <div className='dark:text-gray-200 mb-5'><i className='fas fa-tags mr-4' />{locale.COMMON.TAGS}:</div>
-            <div id='tags-list' className='duration-200 flex flex-wrap'>
-                {tagOptions.map(tag => {
-                  return <div key={tag.name} className='p-2'><TagItem key={tag.name} tag={tag} /></div>
-                })}
-            </div>
+  return (
+    <LayoutBase {...props}>
+      <div className="bg-white dark:bg-hexo-black-gray px-10 py-10 shadow h-full">
+        <div className="dark:text-gray-200 mb-5">
+          <i className="fas fa-tags mr-4" />
+          {locale.COMMON.TAGS}:
         </div>
+        <div id="tags-list" className="duration-200 flex flex-wrap">
+          {tagOptions.map(tag => {
+            return (
+              <div key={tag.name} className="p-2">
+                <TagItem key={tag.name} tag={tag} />
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </LayoutBase>
+  )
 }
 
 export {
